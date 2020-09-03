@@ -1,7 +1,7 @@
 ## A network medicine approach to investigation and population-based validation of disease manifestations and drug repurposing for COVID-19
 
 ### Network proximity code
-The proximity code can be found in the `proximity` folder. First, you need to decompress the file `HumanInteractome.7z` in the same folder.
+The proximity code can be found in the `proximity/` folder. First, you need to decompress the file `HumanInteractome.7z` in the same folder.
 
 * HumanInteractome.tsv - the human interactome, including sources and evidence types
 * HumanInteractome.npy - numpy matrix of all precalculated shortest distance in the interactome
@@ -33,7 +33,7 @@ python network_proximity.py DRUG example/SARS2-DEG.txt 1000 1024
 Please see https://github.com/ChengF-Lab/GPSnet and https://chengf-lab.github.io/PDGPS/ for more details and explanations
 
 ### Supplemental Files
-Supplemental figures and tables in found in supplemental_files/
+Supplemental figures and tables are found in `supplemental_files/`
 
 * S1 Table. Summary of the data sets used in this study.
 * S2 Table. Five SARS-CoV-2 target data sets used in this study.
