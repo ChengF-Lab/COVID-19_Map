@@ -1,5 +1,3 @@
-# COVID-19_Map
-
 ## A network medicine approach to investigation and population-based validation of disease manifestations and drug repurposing for COVID-19
 
 ### Network proximity code
