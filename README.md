@@ -3,7 +3,12 @@
 ## A network medicine approach to investigation and population-based validation of disease manifestations and drug repurposing for COVID-19
 
 ### Network proximity code
-The proximity code and data (human interactome and drug target network) can be found in the proximity folder.
+The proximity code can be found in the `proximity` folder. First, you need to decompress the file `HumanInteractome.7z` in the same folder.
+
+* HumanInteractome.tsv - the human interactome, including sources and evidence types
+* HumanInteractome.npy - numpy matrix of all precalculated shortest distance in the interactome
+* DrugTargetNetwork.txt - drug target network
+* network_proximity.py - code to compute closest network proximity. See below
 
 The `network_proximity.py` supports two modes. To run the program (Python 3), numpy and networkx need to be installed.
 ```
