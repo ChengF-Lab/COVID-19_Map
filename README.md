@@ -5,7 +5,10 @@
 ### Network proximity code
 The proximity code and data (human interactome and drug target network) can be found in the proximity folder.
 
-The `network_proximity.py` supports two modes.
+The `network_proximity.py` supports two modes. To run the program (Python 3), numpy and networkx need to be installed.
+```
+pip install numpy networkx
+```
 
 #### To compute the closest proximity between two gene lists
 ```
