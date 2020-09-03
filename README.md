@@ -3,7 +3,29 @@
 ## A network medicine approach to investigation and population-based validation of disease manifestations and drug repurposing for COVID-19
 
 ### Network proximity code
-...
+The proximity code and data (human interactome and drug target network) can be found in the proximity folder.
+
+The `network_proximity.py` supports two modes. To run the program (Python 3), numpy and networkx need to be installed.
+```
+pip install numpy networkx
+```
+
+#### To compute the closest proximity between two gene lists
+```
+python network_proximity.py path_to_gene_list_1 path_to_gene_list_2 number_of_repeat random_seed
+```
+Example
+```
+python network_proximity.py example/Asthma.txt example/SARS2-DEG_lung.txt 1000 11096
+```
+#### To screen all 3000 drugs for a single gene list
+```
+python network_proximity.py DRUG path_to_gene_list number_of_repeat random_seed
+```
+Example
+```
+python network_proximity.py DRUG example/SARS2-DEG.txt 1000 1024
+```
 
 Please see https://github.com/ChengF-Lab/GPSnet and https://chengf-lab.github.io/PDGPS/ for more details and explanations
 
