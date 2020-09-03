@@ -25,37 +25,45 @@ class DrugTarget(object):
 
     def Screen(self, genes, repeat):
         interactome = Interactome(binSize=100)
-        genes = [i for i in genes if i in interactome.G]
+        genes = interactome.Name2Index(genes)
         for drug in self.drugs:
-            targets = [t for t in self.d2t[drug] if t in interactome.G]
+            targets = interactome.Name2Index(self.d2t[drug])
             if targets:
                 d, z, p = interactome.ProximityZ(targets, genes, repeat=repeat)
                 print(drug, " D: %.3f  Z: %s%.3f  P: %.3f" % (d, "" if z < 0 else " ", z, p))
 
 
 class Interactome(object):
-    def __init__(self, pathG="HumanInteractome.tsv", binSize=300):
+    def __init__(self, pathG="HumanInteractome.tsv", pathSD="HumanInteractome.npy", binSize=300):
         self.G = nx.read_edgelist(pathG, delimiter="\t", data=[("src", str), ("typ", str)])
         self.G.remove_edges_from(nx.selfloop_edges(self.G))
+        self.SD = np.load(pathSD, allow_pickle=True)
         self.nodes = sorted(self.G.nodes())
-        self.n2d = {}
-        self.d2n = {}
+        self.i2n = {index: node for index, node in enumerate(self.nodes)}
+        self.n2i = {node: index for index, node in enumerate(self.nodes)}
+        self.i2d = {}
+        self.d2i = {}
         for node, degree in self.G.degree():
-            if degree in self.d2n:
-                self.d2n[degree].append(node)
+            index = self.n2i[node]
+            if degree in self.d2i:
+                self.d2i[degree].append(index)
             else:
-                self.d2n[degree] = [node]
-            self.n2d[node] = degree
+                self.d2i[degree] = [index]
+            self.i2d[index] = degree
+        self.dmin = min(self.d2i.keys())
+        self.dmax = max(self.d2i.keys())
+        # ------------------------------
+        self.binSize = binSize
+        self.d2b = {}
+        self.b2i = {}
         self.d2b = {}
         self.b2i = {0: []}
-        degrees = sorted(self.d2n.keys())
-        self.dmin = degrees[0]
-        self.dmax = degrees[-1]
+        degrees = sorted(self.d2i.keys())
         b = 0
         for curr, till in zip(degrees, degrees[1:] + [degrees[-1] + 1]):
             for d in range(curr, till):
                 self.d2b[d] = b
-            self.b2i[b].extend(self.d2n[curr])
+            self.b2i[b].extend(self.d2i[curr])
             if curr != degrees[-1] and len(self.b2i[b]) >= binSize:
                 b += 1
                 self.b2i[b] = []
@@ -66,12 +74,17 @@ class Interactome(object):
                 self.d2b[d] = b - 1
             self.b2i[b - 1].extend(self.b2i[b])
             del self.b2i[b]
-        self.binSize = binSize
+
+    def Name2Index(self, names, skipUnknown=True):
+        if skipUnknown:
+            return [self.n2i[n] for n in names if n in self.n2i]
+        else:
+            return [self.n2i[n] for n in names]
 
     def DegreePreserveSampling(self, indexes):
         b2n = {}
         for index in indexes:
-            b = self.d2b[max(self.dmin, min(self.dmax, self.n2d[index]))]
+            b = self.d2b[max(self.dmin, min(self.dmax, self.i2d[index]))]
             if b not in b2n:
                 b2n[b] = 0
             b2n[b] += 1
@@ -82,17 +95,7 @@ class Interactome(object):
             yield sum([random.sample(self.b2i[b], b2n[b]) for b in sorted(b2n)], [])
 
     def Proximity(self, mod1, mod2):
-        SD = np.zeros((len(mod1), len(mod2)), dtype=np.int)
-        for row, source in enumerate(mod1):
-            for col, target in enumerate(mod2):
-                if source != target:
-                    try:
-                        SD[row, col] = nx.shortest_path_length(self.G, source, target)
-                    except nx.NetworkXNoPath:
-                        SD[row, col] = 9999
-                else:
-                    SD[row, col] = 0
-        SD = ma.masked_values(SD, 9999)
+        SD = self.SD[np.ix_(mod1, mod2)]
         closest1 = SD.min(0)
         closest2 = SD.min(1)
         return (closest1.sum() + closest2.sum()) / (closest1.count() + closest2.count())
@@ -141,7 +144,7 @@ if __name__ == "__main__":
         with open(input2) as fi:
             genes2 = fi.read().splitlines()
         interactome = Interactome()
-        genes1 = [i for i in genes1 if i in interactome.G]
-        genes2 = [i for i in genes2 if i in interactome.G]
+        genes1 = interactome.Name2Index(genes1)
+        genes2 = interactome.Name2Index(genes2)
         d, z, p = interactome.ProximityZ(genes1, genes2, repeat=repeat)
         print("D: %.3f  Z: %s%.3f  P: %.3f" % (d, "" if z < 0 else " ", z, p))
