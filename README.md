@@ -33,7 +33,10 @@ python network_proximity.py DRUG example/SARS2-DEG.txt 1000 1024
 Please see https://github.com/ChengF-Lab/GPSnet and https://chengf-lab.github.io/PDGPS/ for more details and explanations
 
 ### Visualization
-https://chengf-lab.github.io/COVID-19_Map/
+:point_right: https://chengf-lab.github.io/COVID-19_Map/ :point_left:
+
+![Map](res/map.png)
+
 
 ### Supplemental Files
 Supplemental figures and tables are found in `supplemental_files/`
